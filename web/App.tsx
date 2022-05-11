@@ -1,45 +1,40 @@
-import { useState } from 'react'
-import logo from './logo.svg'
-import './App.css'
+import React from "react";
+import init, { add } from "../pkg";
+import { useForm, SubmitHandler } from "react-hook-form";
+import "./App.scss";
 
-function App() {
-  const [count, setCount] = useState(0)
+type Form = {
+  a: number;
+  b: number;
+};
+
+const Index: React.FC = () => {
+  const { register, handleSubmit } = useForm<Form>({
+    defaultValues: {
+      a: 0,
+      b: 0,
+    },
+  });
+  const [result, setResult] = React.useState(0);
+
+  React.useEffect(() => {
+    (async () => {
+      await init();
+    })();
+  }, []);
+
+  const onHandleSubmit: SubmitHandler<Form> = (data) => {
+    setResult(add(data.a, data.b));
+  };
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
-    </div>
-  )
-}
+    <form onSubmit={handleSubmit(onHandleSubmit)}>
+      <input type="number" {...register("a")} />
+      <input type="number" {...register("b")} />
+      <button type="submit">Add</button>
+      <p>{result}</p>
+    </form>
+  );
+};
 
-export default App
+export default Index;
